@@ -2,7 +2,7 @@ import streamlit as st
 import pandas as pd
 import yfinance as yf
 import datetime as dt
-import matplotlib.pyplot as plt
+import plotly.graph_objects as go
 
 # Set the date range
 start_date = dt.datetime(2025, 4, 1)
@@ -32,8 +32,10 @@ def load_data():
     df = pd.concat(all_data).reset_index()
     return df
 
-# Load data
+# Streamlit interface
 st.title("📈 Stock Price Comparison Dashboard")
+
+# Load data
 df = load_data()
 
 # Select category
@@ -42,33 +44,4 @@ category_df = df[df['Category'] == category]
 
 # Select two symbols
 symbols = category_df['Symbol'].unique()
-symbol1 = st.selectbox("Select First Symbol", symbols)
-symbol2 = st.selectbox("Select Second Symbol", [s for s in symbols if s != symbol1])
-
-# Filter data for selected stocks
-stk1 = category_df[category_df['Symbol'] == symbol1]
-stk2 = category_df[category_df['Symbol'] == symbol2]
-
-# Plotting
-st.subheader(f"{symbol1} vs {symbol2} - Closing Price")
-
-fig, axs = plt.subplots(1, 2, figsize=(14, 5))
-
-axs[0].plot(stk1['Date'], stk1['Close'], marker='o')
-axs[0].set_title(symbol1)
-axs[0].tick_params(axis='x', rotation=45)
-
-axs[1].plot(stk2['Date'], stk2['Close'], marker='o', color='orange')
-axs[1].set_title(symbol2)
-axs[1].tick_params(axis='x', rotation=45)
-
-plt.tight_layout()
-st.pyplot(fig)
-
-# Option to download data
-st.download_button(
-    label="📥 Download Full Dataset as CSV",
-    data=df.to_csv(index=False),
-    file_name='stock_data_combined.csv',
-    mime='text/csv'
-)
+symbol1 = st.selectbox("Select Fi
