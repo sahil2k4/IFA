@@ -32,7 +32,7 @@ def load_data():
     df = pd.concat(all_data).reset_index()
     return df
 
-# Streamlit interface
+# App Title
 st.title("📈 Stock Price Comparison Dashboard")
 
 # Load data
@@ -44,4 +44,46 @@ category_df = df[df['Category'] == category]
 
 # Select two symbols
 symbols = category_df['Symbol'].unique()
-symbol1 = st.selectbox("Select Fi
+symbol1 = st.selectbox("Select First Symbol", symbols)
+symbol2 = st.selectbox("Select Second Symbol", [s for s in symbols if s != symbol1])
+
+# Filter data for selected stocks
+stk1 = category_df[category_df['Symbol'] == symbol1]
+stk2 = category_df[category_df['Symbol'] == symbol2]
+
+# Plot using Plotly
+st.subheader(f"{symbol1} vs {symbol2} - Closing Price Comparison")
+
+fig = go.Figure()
+
+fig.add_trace(go.Scatter(
+    x=stk1['Date'],
+    y=stk1['Close'],
+    mode='lines+markers',
+    name=symbol1
+))
+
+fig.add_trace(go.Scatter(
+    x=stk2['Date'],
+    y=stk2['Close'],
+    mode='lines+markers',
+    name=symbol2
+))
+
+fig.update_layout(
+    title=f"{symbol1} vs {symbol2} - Closing Price",
+    xaxis_title="Date",
+    yaxis_title="Closing Price (INR)",
+    legend_title="Stocks",
+    template="plotly_white"
+)
+
+st.plotly_chart(fig, use_container_width=True)
+
+# Option to download data
+st.download_button(
+    label="📥 Download Full Dataset as CSV",
+    data=df.to_csv(index=False),
+    file_name='stock_data_combined.csv',
+    mime='text/csv'
+)
